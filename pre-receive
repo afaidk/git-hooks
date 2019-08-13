@@ -1,0 +1,24 @@
+#!/usr/bin/python3
+def printRedBg(text):
+    text = str(text)
+    print('\33[41m' + text + '\033[0m')
+
+import sys, getpass
+user = getpass.getuser()
+allow = True
+for line in sys.stdin:
+    print(line) #For debugging only
+    opts = line.strip().split(' ')
+    prevCommit = opts[0]
+    nxtCommit = opts[1]
+    branch = opts[2]
+    # A user can push to beta or his own repo.
+    if(branch !='refs/heads/beta' and branch != 'refs/heads/br-' + user):
+        printRedBg("Aborted! You can push to beta or br-" + user + " only, not " + branch + '.')
+        sys.exit(1)
+    # User cannot delete a repo from remote.
+    if nxtCommit == 40 *'0': #nxtCommit is 40 0's if you are deleting a branch
+        printRedBg('Aborted! You cannot delete a branch from remote.')
+        sys.exit(1)
+# A return value of 0 allows the commit
+sys.exit(0)
